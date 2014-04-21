@@ -48,7 +48,7 @@ func NewClient(cookieJar http.CookieJar) *Client {
 	}
 }
 
-func (c *Client) Login(username, password string) {
+func (c *Client) Login(username, password string) map[string]interface{} {
 	data := url.Values{}
 
 	h := md5.New()
@@ -56,7 +56,7 @@ func (c *Client) Login(username, password string) {
 	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 	data.Set("name", username)
 
-	fmt.Println(c.makeRequest("/users/login", data))
+	return c.makeRequest("/users/login", data)
 }
 
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
