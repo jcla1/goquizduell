@@ -84,6 +84,26 @@ func (c *Client) CreateUser(username, email, password string) map[string]interfa
 	return c.makeRequest("/users/create", data)
 }
 
+func (c *Client) UpdateUser(username, email, password string) map[string]interface{} {
+    data := url.Values{}
+
+    if name != "" {
+        data.Set("name", username)
+    }
+
+    if email != "" {
+        data.Set("email", email)
+    }
+
+    if password != "" {
+        h := md5.New()
+        io.WriteString(h, passwordSalt+password)
+        data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
+    }
+
+    return c.makeRequest("/users/update_user", data)
+}
+
 func (c *Client) FindUser(username string) map[string]interface{} {
 	data := url.Values{}
 	data.Set("opponent_name", username)
