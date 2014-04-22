@@ -120,11 +120,19 @@ func (c *Client) AddFriend(userId string) map[string]interface{} {
 }
 
 func (c *Client) RemoveFriend(userId string) map[string]interface{} {
-    data := url.Values{}
+	data := url.Values{}
 
-    data.Set("friend_id", userId)
+	data.Set("friend_id", userId)
 
-    return c.makeRequest("/users/remove_friend", data)
+	return c.makeRequest("/users/remove_friend", data)
+}
+
+func (c *Client) UpdateAvatar(avatarCode string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("avatar_code", avatarCode)
+
+	return c.makeRequest("/users/update_avatar", data)
 }
 
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
