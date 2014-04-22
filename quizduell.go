@@ -135,6 +135,15 @@ func (c *Client) UpdateAvatar(avatarCode string) map[string]interface{} {
 	return c.makeRequest("/users/update_avatar", data)
 }
 
+// Not quite sure how this functionality works
+func (c *Client) SendForgotPasswordEmail(email string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("email", email)
+
+	return c.makeRequest("/users/forgot_pwd", data)
+}
+
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
 	requestURL := "https://" + hostName + path
 
