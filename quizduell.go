@@ -119,6 +119,14 @@ func (c *Client) AddFriend(userId string) map[string]interface{} {
 	return c.makeRequest("/users/add_friend", data)
 }
 
+func (c *Client) RemoveFriend(userId string) map[string]interface{} {
+    data := url.Values{}
+
+    data.Set("friend_id", userId)
+
+    return c.makeRequest("/users/remove_friend", data)
+}
+
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
 	requestURL := "https://" + hostName + path
 
