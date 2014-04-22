@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -29,16 +28,27 @@ const (
 
 type Client struct {
 	client *http.Client
+	// We're separating out this cookie jar from
+	// the HTTP client, because Go is trying to be
+	// peticularly RFC compliant and doesn't allow
+	// certain characters in cookies. That's why we
+	// have to handle them seperately.
+	jar http.CookieJar
 }
 
 func NewClient(cookieJar http.CookieJar) *Client {
 	if cookieJar == nil {
-		cookieJar, _ = cookiejar.New(nil)
+		jar, err := cookiejar.New(nil)
+		if err != nil {
+			panic(err)
+		}
+
+		cookieJar = jar
 	}
 
 	return &Client{
+		jar: cookieJar,
 		client: &http.Client{
-			Jar: cookieJar,
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
 					InsecureSkipVerify: true,
@@ -59,8 +69,30 @@ func (c *Client) Login(username, password string) map[string]interface{} {
 	return c.makeRequest("/users/login", data)
 }
 
+func (c *Client) CreateUser(username, email, password string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("name", username)
+	if email != "" {
+		data.Set("email", email)
+	}
+
+	h := md5.New()
+	io.WriteString(h, passwordSalt+password)
+	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
+
+	return c.makeRequest("/users/create", data)
+}
+
+func (c *Client) FindUser(username string) map[string]interface{} {
+	data := url.Values{}
+	data.Set("opponent_name", username)
+
+	return c.makeRequest("/users/find_user", data)
+}
+
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
-	requestURL := fmt.Sprintf("https://%s%s", hostName, path)
+	requestURL := "https://" + hostName + path
 
 	request, err := http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -86,12 +118,12 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	var m map[string]interface{}
-	json.Unmarshal(body, m)
+	json.Unmarshal(body, &m)
 	return m
 }
 
 func getAuthCode(path, clientDate string, data url.Values) string {
-	msg := fmt.Sprintf("https://%s%s%s", hostName, path, clientDate)
+	msg := "https://" + hostName + path + clientDate
 
 	vals := make([]string, len(data))
 	for _, v := range data {
@@ -99,7 +131,6 @@ func getAuthCode(path, clientDate string, data url.Values) string {
 	}
 	sort.Strings(vals)
 	msg += strings.Join(vals, "")
-	fmt.Println(msg)
 
 	h := hmac.New(sha256.New, []byte(authKey))
 	io.WriteString(h, msg)
