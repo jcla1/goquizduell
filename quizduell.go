@@ -87,7 +87,7 @@ func (c *Client) CreateUser(username, email, password string) map[string]interfa
 func (c *Client) UpdateUser(username, email, password string) map[string]interface{} {
 	data := url.Values{}
 
-	if name != "" {
+	if username != "" {
 		data.Set("name", username)
 	}
 
@@ -166,6 +166,10 @@ func (c *Client) TopWriters() map[string]interface{} {
 
 func (c *Client) TopPlayers() map[string]interface{} {
 	return c.makeRequest("/users/top_list_rating", url.Values{})
+}
+
+func (c *Client) CategoryStatistics() map[string]interface{} {
+	return c.makeRequest("/stats/my_stats", url.Values{})
 }
 
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
