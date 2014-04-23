@@ -14,6 +14,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -59,7 +60,7 @@ func NewClient(cookieJar http.CookieJar) *Client {
 	}
 }
 
-func (c *Client) Login(username, password string) map[string]interface{} {
+func (c *Client) Login(username, password string) *Status {
 	data := url.Values{}
 
 	h := md5.New()
@@ -67,10 +68,10 @@ func (c *Client) Login(username, password string) map[string]interface{} {
 	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 	data.Set("name", username)
 
-	return c.makeRequest("/users/login", data)
+	return c.makeRequest("/users/login", data).Status
 }
 
-func (c *Client) CreateUser(username, email, password string) map[string]interface{} {
+func (c *Client) CreateUser(username, email, password string) *Status {
 	data := url.Values{}
 
 	data.Set("name", username)
@@ -82,10 +83,10 @@ func (c *Client) CreateUser(username, email, password string) map[string]interfa
 	io.WriteString(h, passwordSalt+password)
 	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 
-	return c.makeRequest("/users/create", data)
+	return c.makeRequest("/users/create", data).Status
 }
 
-func (c *Client) UpdateUser(username, email, password string) map[string]interface{} {
+func (c *Client) UpdateUser(username, email, password string) *Status {
 	data := url.Values{}
 
 	if username != "" {
@@ -102,151 +103,152 @@ func (c *Client) UpdateUser(username, email, password string) map[string]interfa
 		data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 	}
 
-	return c.makeRequest("/users/update_user", data)
+	return c.makeRequest("/users/update_user", data).Status
 }
 
-func (c *Client) FindUser(username string) map[string]interface{} {
+func (c *Client) FindUser(username string) *User {
 	data := url.Values{}
 	data.Set("opponent_name", username)
 
-	return c.makeRequest("/users/find_user", data)
+	return c.makeRequest("/users/find_user", data).U
 }
 
-func (c *Client) AddFriend(userID string) map[string]interface{} {
+func (c *Client) AddFriend(userID int) *Popup {
 	data := url.Values{}
 
-	data.Set("friend_id", userID)
+	data.Set("friend_id", strconv.Itoa(userID))
 
-	return c.makeRequest("/users/add_friend", data)
+	return c.makeRequest("/users/add_friend", data).Popup
 }
 
-func (c *Client) RemoveFriend(userID string) map[string]interface{} {
+func (c *Client) RemoveFriend(userID int) *Popup {
 	data := url.Values{}
 
-	data.Set("friend_id", userID)
+	data.Set("friend_id", strconv.Itoa(userID))
 
-	return c.makeRequest("/users/remove_friend", data)
+	return c.makeRequest("/users/remove_friend", data).Popup
 }
 
-func (c *Client) UpdateAvatar(avatarCode string) map[string]interface{} {
+func (c *Client) UpdateAvatar(avatarCode string) bool {
 	data := url.Values{}
 
 	data.Set("avatar_code", avatarCode)
 
-	return c.makeRequest("/users/update_avatar", data)
+	return c.makeRequest("/users/update_avatar", data).T
 }
 
 // Not quite sure how this functionality works
-func (c *Client) SendForgotPasswordEmail(email string) map[string]interface{} {
+func (c *Client) SendForgotPasswordEmail(email string) *Popup {
 	data := url.Values{}
 
 	data.Set("email", email)
 
-	return c.makeRequest("/users/forgot_pwd", data)
+	return c.makeRequest("/users/forgot_pwd", data).Popup
 }
 
-func (c *Client) AddBlocked(userID string) map[string]interface{} {
+func (c *Client) AddBlocked(userID int) []User {
 	data := url.Values{}
 
-	data.Set("blocked_id", userID)
+	data.Set("blocked_id", strconv.Itoa(userID))
 
-	return c.makeRequest("/users/add_blocked", data)
+	return c.makeRequest("/users/add_blocked", data).Blocked
 }
 
-func (c *Client) RemoveBlocked(userID string) map[string]interface{} {
+func (c *Client) RemoveBlocked(userID int) []User {
 	data := url.Values{}
 
-	data.Set("blocked_id", userID)
+	data.Set("blocked_id", strconv.Itoa(userID))
 
-	return c.makeRequest("/users/remove_blocked", data)
+	return c.makeRequest("/users/remove_blocked", data).Blocked
 }
 
-func (c *Client) StartGame(opponentID string) map[string]interface{} {
+func (c *Client) StartGame(opponentID int) *Game {
 	data := url.Values{}
 
-	data.Set("opponent_id", opponentID)
+	data.Set("opponent_id", strconv.Itoa(opponentID))
 
-	return c.makeRequest("/games/create_game", data)
+	return c.makeRequest("/games/create_game", data).Game
 }
 
-func (c *Client) StartRandomGame() map[string]interface{} {
-	return c.makeRequest("/games/start_random_game", nil)
+func (c *Client) StartRandomGame() *Game {
+	return c.makeRequest("/games/start_random_game", nil).Game
 }
 
-func (c *Client) GetGame(gameID string) map[string]interface{} {
-	return c.makeRequest("/games/"+gameID, nil)
+func (c *Client) GetGame(gameID int) *Game {
+	return c.makeRequest("/games/"+strconv.Itoa(gameID), nil).Game
 }
 
-func (c *Client) GiveUp(gameID string) map[string]interface{} {
+func (c *Client) GiveUp(gameID int) (*Game, *Popup) {
 	data := url.Values{}
 
-	data.Set("game_id", gameID)
+	data.Set("game_id", strconv.Itoa(gameID))
 
-	return c.makeRequest("/games/give_up", data)
+	d := c.makeRequest("/games/give_up", data)
+	return d.Game, d.Popup
 }
 
-func (c *Client) AcceptGame(gameID string) map[string]interface{} {
+func (c *Client) AcceptGame(gameID int) bool {
 	data := url.Values{}
 
 	data.Set("accept", "1")
-	data.Set("game_id", gameID)
-	return c.makeRequest("/games/accept", data)
+	data.Set("game_id", strconv.Itoa(gameID))
+	return c.makeRequest("/games/accept", data).T
 }
 
-func (c *Client) DeclineGame(gameID string) map[string]interface{} {
+func (c *Client) DeclineGame(gameID int) bool {
 	data := url.Values{}
 
 	data.Set("accept", "0")
-	data.Set("game_id", gameID)
-	return c.makeRequest("/games/accept", data)
+	data.Set("game_id", strconv.Itoa(gameID))
+	return c.makeRequest("/games/accept", data).T
 }
 
-func (c *Client) UploadRoundAnswers(gameID string, answers []int, categoryID string) map[string]interface{} {
+func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) *Game {
 	data := url.Values{}
 
-	data.Set("game_id", gameID)
+	data.Set("game_id", strconv.Itoa(gameID))
 	for _, a := range answers {
-		data.Add("answers", string(a))
+		data.Add("answers", strconv.Itoa(a))
 	}
-	data.Set("cat_choice", categoryID)
+	data.Set("cat_choice", strconv.Itoa(categoryID))
 
-	return c.makeRequest("/games/upload_round_answers", data)
+	return c.makeRequest("/games/upload_round_answers", data).Game
 }
 
-func (c *Client) GetUserGames() map[string]interface{} {
-	return c.makeRequest("/users/current_user_games", url.Values{})
+func (c *Client) GetUserGames() *Status {
+	return c.makeRequest("/users/current_user_games", url.Values{}).Status
 }
 
-func (c *Client) SendMessage(gameID, message string) map[string]interface{} {
+func (c *Client) SendMessage(gameID int, message string) *InGameMessage {
 	data := url.Values{}
 
-	data.Set("game_id", gameID)
+	data.Set("game_id", strconv.Itoa(gameID))
 	data.Set("text", message)
 
-	return c.makeRequest("/games/send_message", data)
+	return c.makeRequest("/games/send_message", data).InGameMessage
 }
 
-func (c *Client) GameStatistics() map[string]interface{} {
-	return c.makeRequest("/stats/my_game_stats", nil)
+func (c *Client) GameStatistics() []GameStatistic {
+	return c.makeRequest("/stats/my_game_stats", nil).GameStatistics
 }
 
-func (c *Client) TopWriters() map[string]interface{} {
-	return c.makeRequest("/users/top_list_writers", nil)
+func (c *Client) TopWriters() []User {
+	return c.makeRequest("/users/top_list_writers", nil).Users
 }
 
-func (c *Client) TopPlayers() map[string]interface{} {
-	return c.makeRequest("/users/top_list_rating", nil)
+func (c *Client) TopPlayers() []User {
+	return c.makeRequest("/users/top_list_rating", nil).Users
 }
 
-func (c *Client) CategoryList() map[string]interface{} {
-	return c.makeRequest("/web/cats", nil)
+func (c *Client) CategoryList() map[int]string {
+	return c.makeRequest("/web/cats", nil).Categories
 }
 
-func (c *Client) CategoryStatistics() map[string]interface{} {
-	return c.makeRequest("/stats/my_stats", nil)
+func (c *Client) CategoryStatistics() *UserCategoryStatistics {
+	return c.makeRequest("/stats/my_stats", nil).UserCategoryStatistics
 }
 
-func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
+func (c *Client) makeRequest(path string, data url.Values) message {
 	requestURL := protocolPrefix + hostName + path
 
 	var request *http.Request
@@ -306,7 +308,7 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	var m map[string]interface{}
+	var m message
 	json.Unmarshal(body, &m)
 	return m
 }
