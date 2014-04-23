@@ -144,6 +144,22 @@ func (c *Client) SendForgotPasswordEmail(email string) map[string]interface{} {
 	return c.makeRequest("/users/forgot_pwd", data)
 }
 
+func (c *Client) AddBlocked(userId string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("blocked_id", userId)
+
+	return c.makeRequest("/users/add_blocked", data)
+}
+
+func (c *Client) RemoveBlocked(userId string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("blocked_id", userId)
+
+	return c.makeRequest("/users/remove_blocked", data)
+}
+
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
 	requestURL := "https://" + hostName + path
 
