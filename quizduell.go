@@ -182,7 +182,35 @@ func (c *Client) GiveUp(gameID string) map[string]interface{} {
 
 	data.Set("game_id", gameID)
 
-	return c.makeRequest("/games/give_up", gameID)
+	return c.makeRequest("/games/give_up", data)
+}
+
+func (c *Client) AcceptGame(gameID string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("accept", "1")
+	data.Set("game_id", gameID)
+	return c.makeRequest("/games/accept", data)
+}
+
+func (c *Client) DeclineGame(gameID string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("accept", "0")
+	data.Set("game_id", gameID)
+	return c.makeRequest("/games/accept", data)
+}
+
+func (c *Client) UploadRoundAnswers(gameID string, answers []int, categoryID string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("game_id", gameID)
+	for _, a := range answers {
+		data.Add("answers", string(a))
+	}
+	data.Set("cat_choice", categoryID)
+
+	return c.makeRequest("/games/upload_round_answers", data)
 }
 
 func (c *Client) GetUserGames() map[string]interface{} {
