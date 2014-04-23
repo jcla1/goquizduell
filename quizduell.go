@@ -161,12 +161,57 @@ func (c *Client) RemoveBlocked(userID string) map[string]interface{} {
 	return c.makeRequest("/users/remove_blocked", data)
 }
 
+func (c *Client) StartGame(opponentID string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("opponent_id", opponentID)
+
+	return c.makeRequest("/games/create_game", data)
+}
+
+func (c *Client) StartRandomGame() map[string]interface{} {
+	return c.makeRequest("/games/start_random_game", nil)
+}
+
+func (c *Client) GetGame(gameID string) map[string]interface{} {
+	return c.makeRequest("/games/" + gameID, nil)
+}
+
+func (c *Client) GiveUp(gameID string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("game_id", gameID)
+
+	return c.makeRequest("/games/give_up", gameID)
+}
+
+func (c *Client) GetUserGames() map[string]interface{} {
+	return c.makeRequest("/users/current_user_games", url.Values{})
+}
+
+func (c *Client) SendMessage(gameID, message string) map[string]interface{} {
+	data := url.Values{}
+
+	data.Set("game_id", gameID)
+	data.Set("text", message)
+
+	return c.makeRequest("/games/send_message", data)
+}
+
+func (c *Client) GameStatistics() map[string]interface{} {
+	return c.makeRequest("/stats/my_game_stats", nil)
+}
+
 func (c *Client) TopWriters() map[string]interface{} {
 	return c.makeRequest("/users/top_list_writers", nil)
 }
 
 func (c *Client) TopPlayers() map[string]interface{} {
 	return c.makeRequest("/users/top_list_rating", nil)
+}
+
+func (c *Client) CategoryList() map[string]interface{} {
+	return c.makeRequest("/web/cats", nil)
 }
 
 func (c *Client) CategoryStatistics() map[string]interface{} {
