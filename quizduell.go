@@ -19,6 +19,7 @@ import (
 )
 
 const (
+	protocolPrefix = "https://"
 	hostName     = "qkgermany.feomedia.se"
 	userAgent    = "Quizduell A 1.3.2"
 	authKey      = "irETGpoJjG57rrSC"
@@ -173,7 +174,7 @@ func (c *Client) CategoryStatistics() map[string]interface{} {
 }
 
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
-	requestURL := "https://" + hostName + path
+	requestURL := protocolPrefix + hostName + path
 
 	request, err := http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -189,12 +190,38 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 	request.Header.Set("clientdate", clientDate)
 	request.Header.Set("Accept-Encoding", "identity")
 
+	// Got to load in the cookie manually and swap
+	// the underscores to backslashes which Go doesn't
+	// support natively in cookie values.
+	cookies := c.jar.Cookies(request.URL)
+	if len(cookies) > 0 {
+		for _, cookie := range cookies {
+			s := cookie.Name + "=\"" + cookie.Value + "\""
+			s = strings.Replace(s, "_", "\\", -1)
+
+			if c := request.Header.Get("Cookie"); c != "" {
+				request.Header.Set("Cookie", c+"; "+s)
+			} else {
+				request.Header.Set("Cookie", s)
+			}
+		}
+	}
+
 	resp, err := c.client.Do(request)
 	if err != nil {
 		panic(err)
 	}
 
 	defer resp.Body.Close()
+
+	// Using this little trick to save the cookies
+	// manually, see the comment above.
+	cookie := resp.Header.Get("Set-Cookie")
+	if cookie != "" {
+		cookie = strings.Replace(cookie, "\\", "_", -1)
+		resp.Header.Set("Set-Cookie", cookie)
+		c.jar.SetCookies(request.URL, resp.Cookies())
+	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -204,7 +231,7 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 }
 
 func getAuthCode(path, clientDate string, data url.Values) string {
-	msg := "https://" + hostName + path + clientDate
+	msg := protocolPrefix + hostName + path + clientDate
 
 	vals := make([]string, len(data))
 	for _, v := range data {
