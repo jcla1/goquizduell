@@ -13,9 +13,9 @@ type User struct {
 }
 
 type Game struct {
+	ID              int             `json:"game_id"`
 	CategoryChoices []int           `json:"cat_choices"`
 	ElapsedMinutes  int             `json:"elapsed_min"`
-	GameID          int             `json:"game_id"`
 	Messages        []InGameMessage `json:"messages"`
 	Opponent        User            `json:"opponent"`
 	OpponentAnswers []int           `json:"opponent_answers"`
