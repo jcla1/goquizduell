@@ -20,11 +20,11 @@ import (
 
 const (
 	protocolPrefix = "https://"
-	hostName     = "qkgermany.feomedia.se"
-	userAgent    = "Quizduell A 1.3.2"
-	authKey      = "irETGpoJjG57rrSC"
-	passwordSalt = "SQ2zgOTmQc8KXmBP"
-	timeout      = 20000
+	hostName       = "qkgermany.feomedia.se"
+	userAgent      = "Quizduell A 1.3.2"
+	authKey        = "irETGpoJjG57rrSC"
+	passwordSalt   = "SQ2zgOTmQc8KXmBP"
+	timeout        = 20000
 )
 
 type Client struct {
@@ -34,7 +34,7 @@ type Client struct {
 	// peticularly RFC compliant and doesn't allow
 	// certain characters in cookies. That's why we
 	// have to handle them seperately.
-	jar http.CookieJar
+	Jar http.CookieJar
 }
 
 func NewClient(cookieJar http.CookieJar) *Client {
@@ -48,7 +48,7 @@ func NewClient(cookieJar http.CookieJar) *Client {
 	}
 
 	return &Client{
-		jar: cookieJar,
+		Jar: cookieJar,
 		client: &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -112,18 +112,18 @@ func (c *Client) FindUser(username string) map[string]interface{} {
 	return c.makeRequest("/users/find_user", data)
 }
 
-func (c *Client) AddFriend(userId string) map[string]interface{} {
+func (c *Client) AddFriend(userID string) map[string]interface{} {
 	data := url.Values{}
 
-	data.Set("friend_id", userId)
+	data.Set("friend_id", userID)
 
 	return c.makeRequest("/users/add_friend", data)
 }
 
-func (c *Client) RemoveFriend(userId string) map[string]interface{} {
+func (c *Client) RemoveFriend(userID string) map[string]interface{} {
 	data := url.Values{}
 
-	data.Set("friend_id", userId)
+	data.Set("friend_id", userID)
 
 	return c.makeRequest("/users/remove_friend", data)
 }
@@ -145,38 +145,46 @@ func (c *Client) SendForgotPasswordEmail(email string) map[string]interface{} {
 	return c.makeRequest("/users/forgot_pwd", data)
 }
 
-func (c *Client) AddBlocked(userId string) map[string]interface{} {
+func (c *Client) AddBlocked(userID string) map[string]interface{} {
 	data := url.Values{}
 
-	data.Set("blocked_id", userId)
+	data.Set("blocked_id", userID)
 
 	return c.makeRequest("/users/add_blocked", data)
 }
 
-func (c *Client) RemoveBlocked(userId string) map[string]interface{} {
+func (c *Client) RemoveBlocked(userID string) map[string]interface{} {
 	data := url.Values{}
 
-	data.Set("blocked_id", userId)
+	data.Set("blocked_id", userID)
 
 	return c.makeRequest("/users/remove_blocked", data)
 }
 
 func (c *Client) TopWriters() map[string]interface{} {
-	return c.makeRequest("/users/top_list_writers", url.Values{})
+	return c.makeRequest("/users/top_list_writers", nil)
 }
 
 func (c *Client) TopPlayers() map[string]interface{} {
-	return c.makeRequest("/users/top_list_rating", url.Values{})
+	return c.makeRequest("/users/top_list_rating", nil)
 }
 
 func (c *Client) CategoryStatistics() map[string]interface{} {
-	return c.makeRequest("/stats/my_stats", url.Values{})
+	return c.makeRequest("/stats/my_stats", nil)
 }
 
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
 	requestURL := protocolPrefix + hostName + path
 
-	request, err := http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
+	var request *http.Request
+	var err error
+
+	if data == nil {
+		request, err = http.NewRequest("GET", requestURL, nil)
+	} else {
+		request, err = http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
+	}
+
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +201,7 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 	// Got to load in the cookie manually and swap
 	// the underscores to backslashes which Go doesn't
 	// support natively in cookie values.
-	cookies := c.jar.Cookies(request.URL)
+	cookies := c.Jar.Cookies(request.URL)
 	if len(cookies) > 0 {
 		for _, cookie := range cookies {
 			s := cookie.Name + "=\"" + cookie.Value + "\""
@@ -220,7 +228,7 @@ func (c *Client) makeRequest(path string, data url.Values) map[string]interface{
 	if cookie != "" {
 		cookie = strings.Replace(cookie, "\\", "_", -1)
 		resp.Header.Set("Set-Cookie", cookie)
-		c.jar.SetCookies(request.URL, resp.Cookies())
+		c.Jar.SetCookies(request.URL, resp.Cookies())
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
