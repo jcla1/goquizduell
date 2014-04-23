@@ -174,7 +174,7 @@ func (c *Client) StartRandomGame() map[string]interface{} {
 }
 
 func (c *Client) GetGame(gameID string) map[string]interface{} {
-	return c.makeRequest("/games/" + gameID, nil)
+	return c.makeRequest("/games/"+gameID, nil)
 }
 
 func (c *Client) GiveUp(gameID string) map[string]interface{} {
