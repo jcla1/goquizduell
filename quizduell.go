@@ -164,6 +164,10 @@ func (c *Client) TopWriters() map[string]interface{} {
 	return c.makeRequest("/users/top_list_writers", url.Values{})
 }
 
+func (c *Client) TopPlayers() map[string]interface{} {
+	return c.makeRequest("/users/top_list_rating", url.Values{})
+}
+
 func (c *Client) makeRequest(path string, data url.Values) map[string]interface{} {
 	requestURL := "https://" + hostName + path
 
