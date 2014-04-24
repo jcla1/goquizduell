@@ -2,8 +2,8 @@ package quizduell
 
 type User struct {
 	AvatarCode       string `json:"avatar_code"`
-	Name             string `json:"name"`
-	UserID           int    `json:"user_id,string"`
+	Name             string `json:"user_name"`
+	ID               int    `json:"user_id,string"`
 	QC               bool   `json:"qc"`
 	QuestionReviewer int    `json:"q_reviewer"`
 	Friends          []User `json:"friends"`
@@ -47,11 +47,11 @@ type GameStatistic struct {
 }
 
 type InGameMessage struct {
-	CreatedAt string
-	From      int
-	ID        int `json:"id,string"`
-	Text      string
-	To        int
+	CreatedAt string `json:"created_at"`
+	From      int    `json:"from,string"`
+	ID        int    `json:"id,string"`
+	Text      string `json:"text"`
+	To        int    `json:"to,string"`
 }
 
 type Popup struct {
