@@ -1,15 +1,18 @@
 package quizduell
 
 type User struct {
-	AvatarCode       string `json:"avatar_code"`
-	Name             string `json:"user_name"`
-	ID               int    `json:"user_id,string"`
-	QC               bool   `json:"qc"`
-	QuestionReviewer int    `json:"q_reviewer"`
-	Friends          []User `json:"friends"`
-	FacebookID       int    `json:"facebook_id"`
-	Games            []Game `json:"games"`
-	Email            string `json:"email"`
+	AvatarCode           string `json:"avatar_code"`
+	Name                 string `json:"name"`
+	ID                   int    `json:"user_id,string"`
+	QC                   bool   `json:"qc"`
+	QuestionReviewer     int    `json:"q_reviewer"`
+	NumApprovedQuestions int    `json:"n_approved_questions"`
+	Key                  int    `json:"key"`
+	Rating               int    `json:"rating"`
+	Friends              []User `json:"friends"`
+	FacebookID           int    `json:"facebook_id"`
+	Games                []Game `json:"games"`
+	Email                string `json:"email"`
 }
 
 type Game struct {
@@ -27,6 +30,7 @@ type Game struct {
 }
 
 type Question struct {
+    QuestionText string `json:"question"`
 	Correct      string `json:"correct"`
 	Wrong1       string `json:"wrong1"`
 	Wrong2       string `json:"wrong2"`
@@ -48,10 +52,10 @@ type GameStatistic struct {
 
 type InGameMessage struct {
 	CreatedAt string `json:"created_at"`
-	From      int    `json:"from,string"`
+	From      int    `json:"from"`
 	ID        int    `json:"id,string"`
 	Text      string `json:"text"`
-	To        int    `json:"to,string"`
+	To        int    `json:"to"`
 }
 
 type Popup struct {

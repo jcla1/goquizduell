@@ -206,11 +206,19 @@ func (c *Client) DeclineGame(gameID int) bool {
 func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) *Game {
 	data := url.Values{}
 
-	data.Set("game_id", strconv.Itoa(gameID))
-	for _, a := range answers {
-		data.Add("answers", strconv.Itoa(a))
+	l := len(answers)-1
+	s := "["
+	for i, a := range answers {
+		s += strconv.Itoa(a)
+		if i != l {
+			s += ", "
+		}
 	}
+	s += "]"
+
+	data.Set("game_id", strconv.Itoa(gameID))
 	data.Set("cat_choice", strconv.Itoa(categoryID))
+	data.Set("answers", s)
 
 	return c.makeRequest("/games/upload_round_answers", data).Game
 }
