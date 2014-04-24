@@ -1,5 +1,31 @@
 package quizduell
 
+type GameState int8
+
+const (
+	Waiting GameState = iota
+	Active
+	Finished
+	_
+	_
+	GivenUp
+)
+
+func (s GameState) String() string {
+	switch s {
+	case Waiting:
+		return "Waiting"
+	case Active:
+		return "Active"
+	case Finished:
+		return "Finished"
+	case GivenUp:
+		return "GivenUp"
+	default:
+		panic("invalid value for GameState")
+	}
+}
+
 type User struct {
 	AvatarCode           string `json:"avatar_code"`
 	Name                 string `json:"name"`
@@ -25,12 +51,12 @@ type Game struct {
 	YourAnswers     []int           `json:"your_answers"`
 	YourTurn        bool            `json:"your_turn"`
 	Questions       []Question      `json:"questions"`
-	GameState       int             `json:"state"`
 	RatingBonus     int             `json:"rating_bonus"`
+	GameState       `json:"state"`
 }
 
 type Question struct {
-    QuestionText string `json:"question"`
+	QuestionText string `json:"question"`
 	Correct      string `json:"correct"`
 	Wrong1       string `json:"wrong1"`
 	Wrong2       string `json:"wrong2"`

@@ -206,7 +206,7 @@ func (c *Client) DeclineGame(gameID int) bool {
 func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) *Game {
 	data := url.Values{}
 
-	l := len(answers)-1
+	l := len(answers) - 1
 	s := "["
 	for i, a := range answers {
 		s += strconv.Itoa(a)
