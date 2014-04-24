@@ -11,7 +11,42 @@ import (
 )
 
 func main() {
-	c := prepareClient("username", "password", "cookie.gob")
+	c := prepareClient(os.Getenv("QD_USERNAME"), os.Getenv("QD_PASSWORD"), os.Getenv("QD_COOKIE_FILE"))
+
+	games := c.GetUserGames().User.Games
+
+	for _, game := range games {
+		// First we accept any game requests
+		if game.GameState == quizduell.Waiting && game.YourTurn {
+			fmt.Println("Accepting invite from: ", game.Opponent.Name)
+			c.AcceptGame(game.ID)
+		}
+
+		// Answer the questions
+		if game.YourTurn {
+			numAns := findNumRequiredAns(game)
+			categoryID := findCorrectCategoryID(game, numAns)
+			answers := make([]int, numAns)
+
+			fmt.Println("Answering", numAns, "questions against:", game.Opponent.Name)
+			c.UploadRoundAnswers(game.ID, append(game.YourAnswers, answers...), categoryID)
+		}
+	}
+}
+
+func findCorrectCategoryID(game quizduell.Game, numAns int) int {
+	if numAns == 3 && len(game.OpponentAnswers) != 0 {
+		return game.CategoryChoices[len(game.CategoryChoices)-1]
+	}
+	// We don't care what category we choose otherwise!
+	return 0
+}
+
+func findNumRequiredAns(game quizduell.Game) int {
+	if len(game.OpponentAnswers) == 0 || len(game.OpponentAnswers) == 18 {
+		return 3
+	}
+	return 6
 }
 
 func prepareClient(username, password, cookieFileName string) *quizduell.Client {
@@ -25,7 +60,11 @@ func prepareClient(username, password, cookieFileName string) *quizduell.Client 
 		c = quizduell.NewClient(jar)
 	} else {
 		c = quizduell.NewClient(nil)
-		c.Login(username, password)
+		status := c.Login(username, password)
+
+		if status == nil {
+			return nil
+		}
 
 		cookies := c.Jar.Cookies(cookieURL)
 		if len(cookies) > 0 {
