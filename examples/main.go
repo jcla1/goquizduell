@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/jcla1/goquizduell"
 	"github.com/jcla1/goquizduell/util"
+	"math"
+	"math/rand"
 	"os"
 )
 
@@ -35,8 +37,23 @@ func main() {
 			categoryID := findCorrectCategoryID(game, numAns)
 			answers := make([]int, numAns)
 
-			fmt.Println("Answering", numAns, "questions against:", game.Opponent.Name)
+			correctCount := 0
+			for i := range answers {
+				answers[i] = randAnswer()
+				if answers[i] == 0 {
+					correctCount++
+				} else if answers[i] != 1 && answers[i] != 2 && answers[i] != 3 {
+					panic(answers[i])
+				}
+			}
+
+			fmt.Println("Answering", numAns, "questions against:", game.Opponent.Name, "[ correct:", correctCount, "]")
 			c.UploadRoundAnswers(game.ID, append(game.YourAnswers, answers...), categoryID)
+		}
+
+		if !game.YourTurn && game.ElapsedMinutes > 60 {
+			fmt.Println("Giving up game against:", game.Opponent.Name)
+			c.GiveUp(game.ID)
 		}
 	}
 
@@ -54,6 +71,10 @@ func main() {
 		g := c.StartRandomGame()
 		fmt.Println("Starting random game against:", g.Opponent.Name)
 	}
+}
+
+func randAnswer() int {
+	return int(math.Abs((rand.NormFloat64())))
 }
 
 func findCorrectCategoryID(game quizduell.Game, numAns int) int {
