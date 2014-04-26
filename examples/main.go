@@ -23,6 +23,11 @@ func main() {
 	for _, game := range games {
 		if game.GameState == quizduell.Active {
 			activeGameCount += 1
+
+			if !game.YourTurn && game.ElapsedMinutes > 60 {
+				fmt.Println("Giving up game against:", game.Opponent.Name)
+				c.GiveUp(game.ID)
+			}
 		}
 
 		// First we accept any game requests
@@ -49,11 +54,6 @@ func main() {
 
 			fmt.Println("Answering", numAns, "questions against:", game.Opponent.Name, "[ correct:", correctCount, "]")
 			c.UploadRoundAnswers(game.ID, append(game.YourAnswers, answers...), categoryID)
-		}
-
-		if !game.YourTurn && game.ElapsedMinutes > 60 {
-			fmt.Println("Giving up game against:", game.Opponent.Name)
-			c.GiveUp(game.ID)
 		}
 	}
 
