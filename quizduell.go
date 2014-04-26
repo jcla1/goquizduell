@@ -104,6 +104,7 @@ func (c *Client) CreateUser(username, email, password string) *Status {
 // UpdateUser sets the user's attributes, if one of
 // them is the empty string that attribute will be
 // omitted from the request.
+// Requires you to be logged in.
 func (c *Client) UpdateUser(username, email, password string) *Status {
 	data := url.Values{}
 
@@ -124,6 +125,9 @@ func (c *Client) UpdateUser(username, email, password string) *Status {
 	return c.makeRequest("/users/update_user", data).Status
 }
 
+// FindUser returns the user object of the user
+// with the provided username.
+// Requires you to be logged in.
 func (c *Client) FindUser(username string) *User {
 	data := url.Values{}
 	data.Set("opponent_name", username)
@@ -131,6 +135,9 @@ func (c *Client) FindUser(username string) *User {
 	return c.makeRequest("/users/find_user", data).U
 }
 
+// AddFriend puts the user with the provided userID onto
+// your friends list.
+// Requires you to be logged in.
 func (c *Client) AddFriend(userID int) *Popup {
 	data := url.Values{}
 
@@ -139,6 +146,9 @@ func (c *Client) AddFriend(userID int) *Popup {
 	return c.makeRequest("/users/add_friend", data).Popup
 }
 
+// RemoveFriend removes the user with the provided userID
+// from your friends list.
+// Requires you to be logged in.
 func (c *Client) RemoveFriend(userID int) *Popup {
 	data := url.Values{}
 
@@ -147,6 +157,11 @@ func (c *Client) RemoveFriend(userID int) *Popup {
 	return c.makeRequest("/users/remove_friend", data).Popup
 }
 
+// UpdateAvatar sets the current user's avatar to the provided
+// avatar code. An avatar consists of individual mouth, hair,
+// eyes, hats, etc. encoded in a numerical string, e.g. "0010999912"
+// (A skin-colored avatar with a crown).
+// Requires you to be logged in.
 func (c *Client) UpdateAvatar(avatarCode string) bool {
 	data := url.Values{}
 
@@ -155,7 +170,10 @@ func (c *Client) UpdateAvatar(avatarCode string) bool {
 	return c.makeRequest("/users/update_avatar", data).T
 }
 
-// Not quite sure how this functionality works
+// SendForgotPasswordEmail sends a forgot password email to the
+// current user. I guess this function requires the current user
+// to have an email set in his profile.
+// Requires you to be logged in.
 func (c *Client) SendForgotPasswordEmail(email string) *Popup {
 	data := url.Values{}
 
@@ -164,6 +182,9 @@ func (c *Client) SendForgotPasswordEmail(email string) *Popup {
 	return c.makeRequest("/users/forgot_pwd", data).Popup
 }
 
+// AddBlocked puts the user with the provided userID onto
+// your blocked list.
+// Requires you to be logged in.
 func (c *Client) AddBlocked(userID int) []User {
 	data := url.Values{}
 
@@ -172,6 +193,9 @@ func (c *Client) AddBlocked(userID int) []User {
 	return c.makeRequest("/users/add_blocked", data).Blocked
 }
 
+// RemoveBlocked removes the user with the provided userID
+// from your blocked list.
+// Requires you to be logged in.
 func (c *Client) RemoveBlocked(userID int) []User {
 	data := url.Values{}
 
