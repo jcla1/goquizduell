@@ -63,8 +63,8 @@ func main() {
 	// fmt.Println("So far you I have won", stats.GamesWon, "games with", stats.QuestionsCorrect, "correct answers.")
 	fmt.Println("---")
 
-	if *numRandGames == 0 && activeGameCount < 10 {
-		*numRandGames = 10 - activeGameCount
+	if *numRandGames == 0 && activeGameCount < 20 {
+		*numRandGames = 20 - activeGameCount
 	}
 
 	for i := 0; i < *numRandGames; i++ {
@@ -74,7 +74,7 @@ func main() {
 }
 
 func randAnswer() int {
-	return int(math.Abs((rand.NormFloat64())))
+	return int(math.Abs((rand.NormFloat64() * 0.9)))
 }
 
 func findCorrectCategoryID(game quizduell.Game, numAns int) int {

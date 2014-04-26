@@ -28,6 +28,9 @@ const (
 	timeout        = 20000
 )
 
+// Client represents a single user's (non-persistent)
+// connection to Quizduell. In fact it just wraps
+// the HTTP client and cookiejar.
 type Client struct {
 	client *http.Client
 	// We're separating out this cookie jar from
@@ -38,6 +41,9 @@ type Client struct {
 	Jar http.CookieJar
 }
 
+// NewClient produces a new Quizduell client. It
+// optionally takes a cookiejar, but if there isn't
+// one provided it automatically creates one for you.
 func NewClient(cookieJar http.CookieJar) *Client {
 	if cookieJar == nil {
 		jar, err := cookiejar.New(nil)
@@ -60,6 +66,11 @@ func NewClient(cookieJar http.CookieJar) *Client {
 	}
 }
 
+// Login logs in a user to Quizduell and puts the
+// returned cookie (on success) into the cookiejar.
+// You've no need to call login, if you create a
+// new user or provide a new cookiejar with the
+// appropriate cookie in it.
 func (c *Client) Login(username, password string) *Status {
 	data := url.Values{}
 
@@ -71,6 +82,10 @@ func (c *Client) Login(username, password string) *Status {
 	return c.makeRequest("/users/login", data).Status
 }
 
+// CreateUser registers a new user with Quizduell,
+// this user is automatically logged in. The email
+// is optional and will be omitted for the call if
+// it is the empty string.
 func (c *Client) CreateUser(username, email, password string) *Status {
 	data := url.Values{}
 
@@ -86,6 +101,9 @@ func (c *Client) CreateUser(username, email, password string) *Status {
 	return c.makeRequest("/users/create", data).Status
 }
 
+// UpdateUser sets the user's attributes, if one of
+// them is the empty string that attribute will be
+// omitted from the request.
 func (c *Client) UpdateUser(username, email, password string) *Status {
 	data := url.Values{}
 
