@@ -25,7 +25,6 @@ const (
 	userAgent      = "Quizduell A 1.3.2"
 	authKey        = "irETGpoJjG57rrSC"
 	passwordSalt   = "SQ2zgOTmQc8KXmBP"
-	timeout        = 20000
 )
 
 // Client represents a single user's (non-persistent)
