@@ -203,6 +203,9 @@ func (c *Client) RemoveBlocked(userID int) []User {
 	return c.makeRequest("/users/remove_blocked", data).Blocked
 }
 
+// StartGame starts a new game against the player with
+// the provided opponentID.
+// Requires you to be logged in.
 func (c *Client) StartGame(opponentID int) *Game {
 	data := url.Values{}
 
@@ -211,14 +214,24 @@ func (c *Client) StartGame(opponentID int) *Game {
 	return c.makeRequest("/games/create_game", data).Game
 }
 
+// StartRandomGame starts a new game against a player
+// that is choosen randomly by the Quizduell server.
+// Requires you to be logged in.
 func (c *Client) StartRandomGame() *Game {
 	return c.makeRequest("/games/start_random_game", nil).Game
 }
 
+// GetGame returns more information about the game with
+// the given gameID. The returned game object also contains
+// the all possible questions of every round.
+// Requires you to be logged in.
 func (c *Client) GetGame(gameID int) *Game {
 	return c.makeRequest("/games/"+strconv.Itoa(gameID), nil).Game
 }
 
+// GiveUp ends the game with the provided gameID, you may
+// loose points when giving up.
+// Requires you to be logged in.
 func (c *Client) GiveUp(gameID int) (*Game, *Popup) {
 	data := url.Values{}
 
@@ -228,6 +241,9 @@ func (c *Client) GiveUp(gameID int) (*Game, *Popup) {
 	return d.Game, d.Popup
 }
 
+// AcceptGame accepts a pending game request that has the
+// given gameID.
+// Requires you to be logged in.
 func (c *Client) AcceptGame(gameID int) bool {
 	data := url.Values{}
 
@@ -236,6 +252,9 @@ func (c *Client) AcceptGame(gameID int) bool {
 	return c.makeRequest("/games/accept", data).T
 }
 
+// DeclineGame declines a pending game request that has the
+// given gameID.
+// Requires you to be logged in.
 func (c *Client) DeclineGame(gameID int) bool {
 	data := url.Values{}
 
@@ -244,6 +263,11 @@ func (c *Client) DeclineGame(gameID int) bool {
 	return c.makeRequest("/games/accept", data).T
 }
 
+// UploadRoundAnswers sends your provided answers to the
+// Quizduell server.
+// Note: In the answers you must include all answers you
+// gave in the previous rounds of the same game.
+// Requires you to be logged in.
 func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) *Game {
 	data := url.Values{}
 
