@@ -11,6 +11,7 @@ import (
 )
 
 var numRandGames = flag.Int("randGames", 0, "number of random games to start")
+var constGames = flag.Int("constGames", 20, "how many random games to maintain")
 
 func main() {
 	flag.Parse()
@@ -24,7 +25,7 @@ func main() {
 		if game.GameState == quizduell.Active {
 			activeGameCount += 1
 
-			if !game.YourTurn && game.ElapsedMinutes > 60 {
+			if !game.YourTurn && len(game.OpponentAnswers) <= 3 && game.ElapsedMinutes > 20 {
 				fmt.Println("Giving up game against:", game.Opponent.Name)
 				c.GiveUp(game.ID)
 			}
@@ -63,18 +64,20 @@ func main() {
 	// fmt.Println("So far you I have won", stats.GamesWon, "games with", stats.QuestionsCorrect, "correct answers.")
 	fmt.Println("---")
 
-	if *numRandGames == 0 && activeGameCount < 20 {
-		*numRandGames = 20 - activeGameCount
+	gamesToStart := *numRandGames
+
+	if (activeGameCount + gamesToStart) < *constGames {
+		gamesToStart += *constGames - (activeGameCount + gamesToStart)
 	}
 
-	for i := 0; i < *numRandGames; i++ {
+	for i := 0; i < gamesToStart; i++ {
 		g := c.StartRandomGame()
 		fmt.Println("Starting random game against:", g.Opponent.Name)
 	}
 }
 
 func randAnswer() int {
-	return int(math.Abs((rand.NormFloat64() * 0.9)))
+	return int(math.Abs((rand.NormFloat64() * 0.8)))
 }
 
 func findCorrectCategoryID(game quizduell.Game, numAns int) int {
