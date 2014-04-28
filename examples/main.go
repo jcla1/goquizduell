@@ -28,10 +28,12 @@ func main() {
 
 			for i := 3; i <= 18; i += 3 {
 				if !game.YourTurn && len(game.OpponentAnswers) <= i && game.ElapsedMinutes > i*10 {
+					activeGameCount -= 1
 					fmt.Println("Giving up game against:", game.Opponent.Name)
 					c.GiveUp(game.ID)
 				}
 			}
+		}
 
 		// First we accept any game requests
 		if game.GameState == quizduell.Waiting && game.YourTurn {
@@ -79,7 +81,7 @@ func main() {
 }
 
 func randAnswer() int {
-	return int(math.Abs((rand.NormFloat64() * ansStdDev)))
+	return int(math.Abs(rand.NormFloat64() * (*ansStdDev)))
 }
 
 func findCorrectCategoryID(game quizduell.Game, numAns int) int {
