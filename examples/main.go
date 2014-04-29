@@ -13,6 +13,7 @@ import (
 var numRandGames = flag.Int("randGames", 0, "number of random games to start")
 var constGames = flag.Int("constGames", 20, "how many random games to maintain")
 var ansStdDev = flag.Float64("ansStdDev", 0.8, "parameter to control the number of correct answers the player gives")
+var giveUpMins = flag.Int("giveUpMins", 360, "number of minutes to play a game before giving up")
 
 func main() {
 	flag.Parse()
@@ -26,12 +27,10 @@ func main() {
 		if game.GameState == quizduell.Active {
 			activeGameCount += 1
 
-			for i := 3; i <= 18; i += 3 {
-				if !game.YourTurn && len(game.OpponentAnswers) <= i && game.ElapsedMinutes > i*10 {
-					activeGameCount -= 1
-					fmt.Println("Giving up game against:", game.Opponent.Name)
-					c.GiveUp(game.ID)
-				}
+			if !game.YourTurn && game.ElapsedMinutes > *giveUpMins {
+				activeGameCount -= 1
+				fmt.Println("Giving up game against:", game.Opponent.Name)
+				c.GiveUp(game.ID)
 			}
 		}
 
