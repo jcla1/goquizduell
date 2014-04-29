@@ -1,3 +1,11 @@
+// Package quizduell provides an interface to the
+// REST API used by the Quizduell mobile apps.
+// It supports all functionality that is also
+// possible in the mobile apps.
+// Note: Most calls to the API do _not_ populate all
+//       fields of the returned type.
+//       As an example, Client.GetUserGames() does not
+//       include the full-text of the questions.
 package quizduell
 
 import (
