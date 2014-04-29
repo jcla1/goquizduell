@@ -288,10 +288,17 @@ func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) *
 	return c.makeRequest("/games/upload_round_answers", data).Game
 }
 
+// GetUserGames returns a status update, that also contains
+// game data from the user's games.
+// Requires you to be logged in.
 func (c *Client) GetUserGames() *Status {
 	return c.makeRequest("/users/current_user_games", url.Values{}).Status
 }
 
+// SendMessage sends a message to the user that is the opponent
+// in the game with the given gameID. All messages to a user
+// are visible in all games against this opponent.
+// Requires you to be logged in.
 func (c *Client) SendMessage(gameID int, message string) *InGameMessage {
 	data := url.Values{}
 
@@ -301,22 +308,36 @@ func (c *Client) SendMessage(gameID int, message string) *InGameMessage {
 	return c.makeRequest("/games/send_message", data).InGameMessage
 }
 
+// GameStatistics returns general game statistic information on
+// a per opponent basis.
+// Requires you to be logged in.
 func (c *Client) GameStatistics() []GameStatistic {
 	return c.makeRequest("/stats/my_game_stats", nil).GameStatistics
 }
 
+// TopWriters gets the list of users that have submitted the
+// most questions, that have also been accepted.
+// Requires you to be logged in.
 func (c *Client) TopWriters() []User {
 	return c.makeRequest("/users/top_list_writers", nil).Users
 }
 
+// TopPlayers gets the list of users that have the highest ranking
+// based on the points won in games.
+// Requires you to be logged in.
 func (c *Client) TopPlayers() []User {
 	return c.makeRequest("/users/top_list_rating", nil).Users
 }
 
+// CategoryList fetches all possible categories.
+// Requires you to be logged in.
 func (c *Client) CategoryList() map[int]string {
 	return c.makeRequest("/web/cats", nil).Categories
 }
 
+// CategoryStatistics gives you the performance of the logged in
+// user for all categories.
+// Requires you to be logged in.
 func (c *Client) CategoryStatistics() *UserCategoryStatistics {
 	return c.makeRequest("/stats/my_stats", nil).UserCategoryStatistics
 }
