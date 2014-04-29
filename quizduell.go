@@ -224,6 +224,8 @@ func (c *Client) StartGame(opponentID int) *Game {
 
 // StartRandomGame starts a new game against a player
 // that is choosen randomly by the Quizduell server.
+// After some time testing the automatic player, it
+// seems that you can at most play in about 122 games.
 // Requires you to be logged in.
 func (c *Client) StartRandomGame() *Game {
 	return c.makeRequest("/games/start_random_game", nil).Game
