@@ -36,6 +36,7 @@ func main() {
 
 		// First we accept any game requests
 		if game.GameState == quizduell.Waiting && game.YourTurn {
+			activeGameCount += 1
 			fmt.Println("Accepting invite from:", game.Opponent.Name)
 			c.AcceptGame(game.ID)
 		}
@@ -45,6 +46,10 @@ func main() {
 			numAns := findNumRequiredAns(game)
 			categoryID := findCorrectCategoryID(game, numAns)
 			answers := make([]int, numAns)
+
+			if numAns == 3 && len(game.OpponentAnswers) > 0 {
+				activeGameCount -= 1
+			}
 
 			correctCount := 0
 			for i := range answers {
