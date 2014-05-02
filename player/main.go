@@ -8,12 +8,19 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"strings"
 )
 
 var numRandGames = flag.Int("randGames", 0, "number of random games to start")
 var constGames = flag.Int("constGames", 20, "how many random games to maintain")
 var ansStdDev = flag.Float64("ansStdDev", 0.8, "parameter to control the number of correct answers the player gives")
 var giveUpMins = flag.Int("giveUpMins", 360, "number of minutes to play a game before giving up")
+
+var noPlayNames stringSlice
+
+func init() {
+	flag.Var(&noPlayNames, "noPlayNames", "comma-seperated list of usernames that should not be played against")
+}
 
 func main() {
 	flag.Parse()
@@ -24,6 +31,10 @@ func main() {
 	activeGameCount := 0
 
 	for _, game := range games {
+		if isNoPlayName(game.Opponent.Name) {
+			continue
+		}
+
 		if game.GameState == quizduell.Active {
 			activeGameCount += 1
 
@@ -101,4 +112,27 @@ func findNumRequiredAns(game quizduell.Game) int {
 		return 3
 	}
 	return 6
+}
+
+func isNoPlayName(name string) bool {
+	for _, other := range noPlayNames {
+		if name == other {
+			return true
+		}
+	}
+	return false
+}
+
+type stringSlice []string
+
+func (s *stringSlice) String() string {
+	return fmt.Sprint(*s)
+}
+
+func (s *stringSlice) Set(value string) error {
+	for _, name := range strings.Split(value, ",") {
+		name = strings.Trim(name, " ")
+		*s = append(*s, name)
+	}
+	return nil
 }
