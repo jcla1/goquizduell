@@ -11,15 +11,15 @@ import (
 	"strings"
 )
 
-var numRandGames = flag.Int("randGames", 0, "number of random games to start")
-var constGames = flag.Int("constGames", 20, "how many random games to maintain")
-var ansStdDev = flag.Float64("ansStdDev", 0.8, "parameter to control the number of correct answers the player gives")
-var giveUpMins = flag.Int("giveUpMins", 360, "number of minutes to play a game before giving up")
+var numRandGames = flag.Int("rand-games", 0, "number of random games to start")
+var constGames = flag.Int("const-games", 20, "how many random games to maintain")
+var ansStdDev = flag.Float64("ans-stddev", 0.8, "parameter to control the number of correct answers the player gives")
+var giveUpMins = flag.Int("give-up-mins", 360, "number of minutes to play a game before giving up")
 
 var noPlayNames stringSlice
 
 func init() {
-	flag.Var(&noPlayNames, "noPlayNames", "comma-seperated list of usernames that should not be played against")
+	flag.Var(&noPlayNames, "no-play-names", "comma-seperated list of usernames that should not be played against")
 }
 
 func main() {
