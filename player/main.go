@@ -15,23 +15,31 @@ var numRandGames = flag.Int("rand-games", 0, "number of random games to start")
 var constGames = flag.Int("const-games", 20, "how many random games to maintain")
 var ansStdDev = flag.Float64("ans-stddev", 0.8, "parameter to control the number of correct answers the player gives")
 var giveUpMins = flag.Int("give-up-mins", 360, "number of minutes to play a game before giving up")
+var excludeFriends = flag.Bool("exclude-friends", true, "exclude the users on your friends list from gameplay")
 
 var noPlayNames stringSlice
 
 func init() {
-	flag.Var(&noPlayNames, "no-play-names", "comma-seperated list of usernames that should not be played against")
+	flag.Var(&noPlayNames, "no-play-names", "comma-separated list of usernames that should not be played against")
 }
 
 func main() {
 	flag.Parse()
 	c := util.PrepareClient(os.Getenv("QD_USERNAME"), os.Getenv("QD_PASSWORD"), os.Getenv("QD_COOKIE_FILE"))
 
-	games := c.GetUserGames().User.Games
+	user := c.GetUserGames().User
+	games := user.Games
+
+	friendsNames := make([]string, 0, len(user.Friends))
+
+	for _, u := range user.Friends {
+		friendsNames = append(friendsNames, u.Name)
+	}
 
 	activeGameCount := 0
 
 	for _, game := range games {
-		if isNoPlayName(game.Opponent.Name) {
+		if isNoPlayName(noPlayNames, game.Opponent.Name) || (*excludeFriends && isNoPlayName(friendsNames, game.Opponent.Name)) {
 			continue
 		}
 
@@ -114,8 +122,8 @@ func findNumRequiredAns(game quizduell.Game) int {
 	return 6
 }
 
-func isNoPlayName(name string) bool {
-	for _, other := range noPlayNames {
+func isNoPlayName(list []string, name string) bool {
+	for _, other := range list {
 		if name == other {
 			return true
 		}
