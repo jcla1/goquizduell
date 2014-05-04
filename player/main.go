@@ -25,9 +25,13 @@ func init() {
 
 func main() {
 	flag.Parse()
-	c := util.PrepareClient(os.Getenv("QD_USERNAME"), os.Getenv("QD_PASSWORD"), os.Getenv("QD_COOKIE_FILE"))
+	c, err := util.PrepareClient(os.Getenv("QD_USERNAME"), os.Getenv("QD_PASSWORD"), os.Getenv("QD_COOKIE_FILE"))
+	if err != nil { panic(err) }
 
-	user := c.GetUserGames().User
+	status, err := c.GetUserGames()
+	if err != nil { panic(err) }
+
+	user := status.User
 	games := user.Games
 
 	friendsNames := make([]string, 0, len(user.Friends))
@@ -85,7 +89,9 @@ func main() {
 		}
 	}
 
-	stats := c.CategoryStatistics()
+	stats, err := c.CategoryStatistics()
+	if err != nil { panic(err) }
+
 	fmt.Println("---\nCurrently playing in", activeGameCount, "active games.")
 	fmt.Printf("My current rank is %d/%d users.\n", stats.Rank, stats.NumUsers)
 	// fmt.Println("So far you I have won", stats.GamesWon, "games with", stats.QuestionsCorrect, "correct answers.")
@@ -98,7 +104,9 @@ func main() {
 	}
 
 	for i := 0; i < gamesToStart; i++ {
-		g := c.StartRandomGame()
+		g, err := c.StartRandomGame()
+		if err != nil { panic(err) }
+
 		fmt.Println("Starting random game against:", g.Opponent.Name)
 	}
 }
