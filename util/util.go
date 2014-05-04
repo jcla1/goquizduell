@@ -9,21 +9,25 @@ import (
 	"os"
 )
 
-func PrepareClient(username, password, cookieFileName string) *quizduell.Client {
+func PrepareClient(username, password, cookieFileName string) (*quizduell.Client, error) {
 	cookieURL, _ := url.Parse("https://qkgermany.feomedia.se/")
 	var c *quizduell.Client
+	var err error
 
 	if cookie, err := loadCookie(cookieFileName); err == nil {
 		jar, _ := cookiejar.New(nil)
 		jar.SetCookies(cookieURL, []*http.Cookie{cookie})
 
-		c = quizduell.NewClient(jar)
+		c, err = quizduell.NewClient(jar)
 	} else {
-		c = quizduell.NewClient(nil)
-		status := c.Login(username, password)
+		c, err = quizduell.NewClient(nil)
+		if err != nil {
+			return nil, err
+		}
 
-		if status == nil {
-			return nil
+		_, err := c.Login(username, password)
+		if err != nil {
+			return nil, err
 		}
 
 		cookies := c.Jar.Cookies(cookieURL)
@@ -34,12 +38,12 @@ func PrepareClient(username, password, cookieFileName string) *quizduell.Client 
 
 			err := saveCookie(cookieFileName, cookie)
 			if err != nil {
-				panic(err)
+				return nil, err
 			}
 		}
 	}
 
-	return c
+	return c, err
 }
 
 func saveCookie(cookieFileName string, cookie *http.Cookie) error {
