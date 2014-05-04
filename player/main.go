@@ -26,10 +26,14 @@ func init() {
 func main() {
 	flag.Parse()
 	c, err := util.PrepareClient(os.Getenv("QD_USERNAME"), os.Getenv("QD_PASSWORD"), os.Getenv("QD_COOKIE_FILE"))
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 
 	status, err := c.GetUserGames()
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 
 	user := status.User
 	games := user.Games
@@ -90,7 +94,9 @@ func main() {
 	}
 
 	stats, err := c.CategoryStatistics()
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println("---\nCurrently playing in", activeGameCount, "active games.")
 	fmt.Printf("My current rank is %d/%d users.\n", stats.Rank, stats.NumUsers)
@@ -105,7 +111,9 @@ func main() {
 
 	for i := 0; i < gamesToStart; i++ {
 		g, err := c.StartRandomGame()
-		if err != nil { panic(err) }
+		if err != nil {
+			panic(err)
+		}
 
 		fmt.Println("Starting random game against:", g.Opponent.Name)
 	}

@@ -86,7 +86,7 @@ func (c *Client) Login(username, password string) (*Status, error) {
 	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 	data.Set("name", username)
 
-	msg, err := c.makeRequest("/users/login", data) 
+	msg, err := c.makeRequest("/users/login", data)
 	if err == nil {
 		return msg.Status, nil
 	}
@@ -110,7 +110,7 @@ func (c *Client) CreateUser(username, email, password string) (*Status, error) {
 	io.WriteString(h, passwordSalt+password)
 	data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 
-	msg, err := c.makeRequest("/users/create", data) 
+	msg, err := c.makeRequest("/users/create", data)
 	if err == nil {
 		return msg.Status, nil
 	}
@@ -139,7 +139,7 @@ func (c *Client) UpdateUser(username, email, password string) (*Status, error) {
 		data.Set("pwd", string(hex.EncodeToString(h.Sum(nil))))
 	}
 
-	msg, err := c.makeRequest("/users/update_user", data) 
+	msg, err := c.makeRequest("/users/update_user", data)
 	if err == nil {
 		return msg.Status, nil
 	}
@@ -154,7 +154,7 @@ func (c *Client) FindUser(username string) (*User, error) {
 	data := url.Values{}
 	data.Set("opponent_name", username)
 
-	msg, err := c.makeRequest("/users/find_user", data) 
+	msg, err := c.makeRequest("/users/find_user", data)
 	if err == nil {
 		return msg.U, nil
 	}
@@ -170,7 +170,7 @@ func (c *Client) AddFriend(userID int) (*Popup, error) {
 
 	data.Set("friend_id", strconv.Itoa(userID))
 
-	msg, err := c.makeRequest("/users/add_friend", data) 
+	msg, err := c.makeRequest("/users/add_friend", data)
 	if err == nil {
 		return msg.Popup, nil
 	}
@@ -186,7 +186,7 @@ func (c *Client) RemoveFriend(userID int) (*Popup, error) {
 
 	data.Set("friend_id", strconv.Itoa(userID))
 
-	msg, err := c.makeRequest("/users/remove_friend", data) 
+	msg, err := c.makeRequest("/users/remove_friend", data)
 	if err == nil {
 		return msg.Popup, nil
 	}
@@ -204,7 +204,7 @@ func (c *Client) UpdateAvatar(avatarCode string) (bool, error) {
 
 	data.Set("avatar_code", avatarCode)
 
-	msg, err := c.makeRequest("/users/update_avatar", data) 
+	msg, err := c.makeRequest("/users/update_avatar", data)
 	if err == nil {
 		return msg.T, nil
 	}
@@ -221,7 +221,7 @@ func (c *Client) SendForgotPasswordEmail(email string) (*Popup, error) {
 
 	data.Set("email", email)
 
-	msg, err := c.makeRequest("/users/forgot_pwd", data) 
+	msg, err := c.makeRequest("/users/forgot_pwd", data)
 	if err == nil {
 		return msg.Popup, nil
 	}
@@ -237,7 +237,7 @@ func (c *Client) AddBlocked(userID int) ([]User, error) {
 
 	data.Set("blocked_id", strconv.Itoa(userID))
 
-	msg, err := c.makeRequest("/users/add_blocked", data) 
+	msg, err := c.makeRequest("/users/add_blocked", data)
 	if err == nil {
 		return msg.Blocked, nil
 	}
@@ -253,7 +253,7 @@ func (c *Client) RemoveBlocked(userID int) ([]User, error) {
 
 	data.Set("blocked_id", strconv.Itoa(userID))
 
-	msg, err := c.makeRequest("/users/remove_blocked", data) 
+	msg, err := c.makeRequest("/users/remove_blocked", data)
 	if err == nil {
 		return msg.Blocked, nil
 	}
@@ -269,7 +269,7 @@ func (c *Client) StartGame(opponentID int) (*Game, error) {
 
 	data.Set("opponent_id", strconv.Itoa(opponentID))
 
-	msg, err := c.makeRequest("/games/create_game", data) 
+	msg, err := c.makeRequest("/games/create_game", data)
 	if err == nil {
 		return msg.Game, nil
 	}
@@ -283,7 +283,7 @@ func (c *Client) StartGame(opponentID int) (*Game, error) {
 // seems that you can at most play in about 122 games.
 // Requires you to be logged in.
 func (c *Client) StartRandomGame() (*Game, error) {
-	msg, err := c.makeRequest("/games/start_random_game", nil) 
+	msg, err := c.makeRequest("/games/start_random_game", nil)
 	if err == nil {
 		return msg.Game, nil
 	}
@@ -296,7 +296,7 @@ func (c *Client) StartRandomGame() (*Game, error) {
 // the all possible questions of every round.
 // Requires you to be logged in.
 func (c *Client) GetGame(gameID int) (*Game, error) {
-	msg, err := c.makeRequest("/games/"+strconv.Itoa(gameID), nil) 
+	msg, err := c.makeRequest("/games/"+strconv.Itoa(gameID), nil)
 	if err == nil {
 		return msg.Game, nil
 	}
@@ -312,7 +312,7 @@ func (c *Client) GiveUp(gameID int) (*Game, *Popup, error) {
 
 	data.Set("game_id", strconv.Itoa(gameID))
 
-	msg, err := c.makeRequest("/games/give_up", data) 
+	msg, err := c.makeRequest("/games/give_up", data)
 	if err == nil {
 		return msg.Game, msg.Popup, nil
 	}
@@ -329,7 +329,7 @@ func (c *Client) AcceptGame(gameID int) (bool, error) {
 	data.Set("accept", "1")
 	data.Set("game_id", strconv.Itoa(gameID))
 
-	msg, err := c.makeRequest("/games/accept", data) 
+	msg, err := c.makeRequest("/games/accept", data)
 	if err == nil {
 		return msg.T, nil
 	}
@@ -346,7 +346,7 @@ func (c *Client) DeclineGame(gameID int) (bool, error) {
 	data.Set("accept", "0")
 	data.Set("game_id", strconv.Itoa(gameID))
 
-	msg, err := c.makeRequest("/games/accept", data) 
+	msg, err := c.makeRequest("/games/accept", data)
 	if err == nil {
 		return msg.T, nil
 	}
@@ -376,7 +376,7 @@ func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) (
 	data.Set("cat_choice", strconv.Itoa(categoryID))
 	data.Set("answers", s)
 
-	msg, err := c.makeRequest("/games/upload_round_answers", data) 
+	msg, err := c.makeRequest("/games/upload_round_answers", data)
 	if err == nil {
 		return msg.Game, nil
 	}

@@ -80,7 +80,7 @@ type GameStatistic struct {
 type InGameMessage struct {
 	CreatedAt string `json:"created_at"`
 	From      int    `json:"from"`
-	ID        string    `json:"id"`
+	ID        string `json:"id"`
 	Text      string `json:"text"`
 	To        int    `json:"to"`
 }
@@ -94,19 +94,19 @@ type Status struct {
 	LoggedIn bool `json:"logged_in"`
 	*User    `json:"user"`
 	Settings *struct {
-		MaxFreeGames     int    `json:"max_free_games"`
-		GiveUpPointLoss  int    `json:"give_up_point_loss"`
-		AdProvider       string `json:"ad_provider"`
-		AdmobMedID       string `json:"ad_mob_med_id"`
-		AdmobMedSplashID string `json:"admob_med_splash_id"`
-		Fulmium          bool   `json:"fulmium"`
-		Feo              bool   `json:"feo"`
-		Feos             float64    `json:"feos"`
-		PPF              float64    `json:"ppf"`
-		CheckLimboGames  bool   `json:"check_limbo_games"`
-		RefreshTableFreq int    `json:"refresh_table_freq"`
-		RefreshFreq      int    `json:"refresh_freq"`
-		SplashFreq       float64    `json:"splash_freq"`
+		MaxFreeGames     int     `json:"max_free_games"`
+		GiveUpPointLoss  int     `json:"give_up_point_loss"`
+		AdProvider       string  `json:"ad_provider"`
+		AdmobMedID       string  `json:"ad_mob_med_id"`
+		AdmobMedSplashID string  `json:"admob_med_splash_id"`
+		Fulmium          bool    `json:"fulmium"`
+		Feo              bool    `json:"feo"`
+		Feos             float64 `json:"feos"`
+		PPF              float64 `json:"ppf"`
+		CheckLimboGames  bool    `json:"check_limbo_games"`
+		RefreshTableFreq int     `json:"refresh_table_freq"`
+		RefreshFreq      int     `json:"refresh_freq"`
+		SplashFreq       float64 `json:"splash_freq"`
 		override         *struct {
 			GameGiveUpMessage string `json:"GAME_GIVEUP_MESS"`
 			InviteViaWhatsApp string `json:"INVITE_VIA_WHATSAPP"`
