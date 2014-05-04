@@ -533,9 +533,9 @@ func (c *Client) makeRequest(path string, data url.Values) (*message, error) {
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	var m *message
-	err = json.Unmarshal(body, m)
-	return m, err
+	var m message
+	err = json.Unmarshal(body, &m)
+	return &m, err
 }
 
 func getAuthCode(path, clientDate string, data url.Values) string {

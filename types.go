@@ -30,13 +30,14 @@ type User struct {
 	AvatarCode           string `json:"avatar_code"`
 	Name                 string `json:"name"`
 	ID                   int    `json:"user_id,string"`
+	TT                   string `json:"tt"`
 	QC                   bool   `json:"qc"`
 	QuestionReviewer     int    `json:"q_reviewer"`
 	NumApprovedQuestions int    `json:"n_approved_questions"`
 	Key                  int    `json:"key"`
 	Rating               int    `json:"rating"`
 	Friends              []User `json:"friends"`
-	FacebookID           int    `json:"facebook_id"`
+	FacebookID           int    `json:"facebook_id,string"`
 	Games                []Game `json:"games"`
 	Email                string `json:"email"`
 }
@@ -79,7 +80,7 @@ type GameStatistic struct {
 type InGameMessage struct {
 	CreatedAt string `json:"created_at"`
 	From      int    `json:"from"`
-	ID        int    `json:"id,string"`
+	ID        string    `json:"id"`
 	Text      string `json:"text"`
 	To        int    `json:"to"`
 }
@@ -100,12 +101,12 @@ type Status struct {
 		AdmobMedSplashID string `json:"admob_med_splash_id"`
 		Fulmium          bool   `json:"fulmium"`
 		Feo              bool   `json:"feo"`
-		Feos             int    `json:"feos"`
-		PPF              int    `json:"ppf"`
+		Feos             float64    `json:"feos"`
+		PPF              float64    `json:"ppf"`
 		CheckLimboGames  bool   `json:"check_limbo_games"`
 		RefreshTableFreq int    `json:"refresh_table_freq"`
 		RefreshFreq      int    `json:"refresh_freq"`
-		SplashFreq       int    `json:"splash_freq"`
+		SplashFreq       float64    `json:"splash_freq"`
 		override         *struct {
 			GameGiveUpMessage string `json:"GAME_GIVEUP_MESS"`
 			InviteViaWhatsApp string `json:"INVITE_VIA_WHATSAPP"`
