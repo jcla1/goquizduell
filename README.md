@@ -15,6 +15,8 @@ To automate the process of starting the player, there is [a script](runner.sh) i
 
 When starting the player for the first time, you'll have to provide your username, password and a name for the cookie file in environmental variables named `QD_USERNAME`, `QD_PASSWORD`, `QD_COOKIE_FILE`, respectively. After this initial run, you'll only ever have to provide the `QD_COOKIE_FILE` variable, provided the file actually still exists.
 
+__*Warning*__: Most calls to the API do __not__ populate all fields of the returned structs. Some may still contain their respective null values. i.e. when retrieving the list of active games from a `*quizduell.Status` the list of questions for a particular game will be empty.
+
 ## License
 Pubished under the [MIT License](LICENSE).
 
