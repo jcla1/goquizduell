@@ -17,6 +17,8 @@ When starting the player for the first time, you'll have to provide your usernam
 
 __*Warning*__: Most calls to the API do __not__ populate all fields of the returned structs. Some may still contain their respective null values. i.e. when retrieving the list of active games from a `*quizduell.Status` the list of questions for a particular game will be empty.
 
+__*Note*__: When calling `func (c *Client) UploadRoundAnswers` you must also pass all of your previous answers to the questions, in addition to your answers of this round. If you are passing the answers to questions where your opponent choose the category, you must also pass the correct category for those questions/answers (i.e. `game.CategoryChoices[len(game.CategoryChoices)-1]`).
+
 ## License
 Pubished under the [MIT License](LICENSE).
 
