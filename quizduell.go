@@ -147,6 +147,18 @@ func (c *Client) UpdateUser(username, email, password string) (*Status, error) {
 	return nil, err
 }
 
+// CreateTVUser creates a new TV user profile for the
+// current logged in Quizduell users.
+// Requires you to be logged in.
+func (c *Client) CreateTVUser() (*User, error) {
+	msg, err := c.makeRequest("/tv/create_tv_user", url.Values{})
+	if err == nil {
+		return msg.User, nil
+	}
+
+	return nil, err
+}
+
 // FindUser returns the user object of the user
 // with the provided username.
 // Requires you to be logged in.
