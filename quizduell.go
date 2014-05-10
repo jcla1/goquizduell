@@ -577,12 +577,13 @@ func stringifyIntSlice(slice []int) string {
 		}
 	}
 	s += "]"
+
+	return s
 }
 
 func buildRequest(requestURL string, data url.Values) (*http.Request, error) {
 	if data == nil {
 		return http.NewRequest("GET", requestURL, nil)
-	} else {
-		return http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
 	}
+	return http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
 }

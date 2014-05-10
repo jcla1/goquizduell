@@ -1,8 +1,11 @@
 package quizduell
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 const (
@@ -33,9 +36,13 @@ func NewTVClient(userID int, authToken string) *TVClient {
 // existant (and logged in) Quizduell client. If the user
 // hasn't created a TV profile yet, this will also be done
 // in the process.
-func FromClient(c *Client) *TVClient {
-	user := c.CreateTVUser()
-	return NewTVClient(user.UserID, user.TT)
+func FromClient(c *Client) (*TVClient, error) {
+	user, err := c.CreateTVUser()
+	if err != nil {
+		return nil, err
+	}
+
+	return NewTVClient(user.ID, user.TT), nil
 }
 
 func (t *TVClient) AgreeAGBs() map[string]interface{} {
@@ -52,6 +59,7 @@ func (t *TVClient) request(path string, data url.Values) map[string]interface{} 
 
 	request.Header.Set("x-app-request", corsHeaderToken)
 	request.Header.Set("x-tv-authtoken", t.AuthToken)
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 
 	resp, err := http.DefaultClient.Do(request)
 
