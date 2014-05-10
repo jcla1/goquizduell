@@ -45,12 +45,19 @@ func FromClient(c *Client) (*TVClient, error) {
 	return NewTVClient(user.ID, user.TT), nil
 }
 
+// AgreeAGBs makes the current user agree to the AGB
+// put up by the TV quiz broadcaster.
 func (t *TVClient) AgreeAGBs() map[string]interface{} {
 	return t.request("/feousers/agbs/"+strconv.Itoa(t.UserID)+"/true", url.Values{})
 }
 
+// GetState returns the state of the TV quiz
 func (t *TVClient) GetState() map[string]interface{} {
 	return t.request("/states/"+strconv.Itoa(t.UserID), nil)
+}
+
+func (t *TVClient) GetRankings() map[string]interface{} {
+	return t.request("/users/myranking/"+strconv.Itoa(t.UserID), nil)
 }
 
 func (t *TVClient) request(path string, data url.Values) map[string]interface{} {

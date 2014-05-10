@@ -2,7 +2,7 @@ Quizduell API client
 ===========
 
 Inofficial API client for the Quizduell REST API written in Go.
-Inspired by [https://github.com/derrod/quizduellapi](https://github.com/derrod/quizduellapi) and [easysurfer.me](http://easysurfer.me/wordpress/?p=761)
+Inspired by [https://github.com/mtschirs/quizduellapi](https://github.com/mtschirs/quizduellapi) and [easysurfer.me](http://easysurfer.me/wordpress/?p=761)
 
 For documentation, [see here](http://godoc.org/github.com/jcla1/goquizduell).
 
