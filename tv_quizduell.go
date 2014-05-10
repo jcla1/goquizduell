@@ -49,6 +49,10 @@ func (t *TVClient) AgreeAGBs() map[string]interface{} {
 	return t.request("/feousers/agbs/"+strconv.Itoa(t.UserID)+"/true", url.Values{})
 }
 
+func (t *TVClient) GetState() map[string]interface{} {
+	return t.request("/states/"+strconv.Itoa(t.UserID), nil)
+}
+
 func (t *TVClient) request(path string, data url.Values) map[string]interface{} {
 	requestURL := tvProtocolPrefix + tvHostName + path
 	request, err := buildRequest(requestURL, data)
