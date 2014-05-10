@@ -494,14 +494,7 @@ func (c *Client) CategoryStatistics() (*UserCategoryStatistics, error) {
 func (c *Client) makeRequest(path string, data url.Values) (*message, error) {
 	requestURL := protocolPrefix + hostName + path
 
-	var request *http.Request
-	var err error
-
-	if data == nil {
-		request, err = http.NewRequest("GET", requestURL, nil)
-	} else {
-		request, err = http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
-	}
+	request, err := buildRequest(requestURL, data)
 
 	if err != nil {
 		return nil, err
@@ -549,7 +542,10 @@ func (c *Client) makeRequest(path string, data url.Values) (*message, error) {
 		c.Jar.SetCookies(request.URL, resp.Cookies())
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 
 	var m message
 	err = json.Unmarshal(body, &m)
@@ -581,4 +577,12 @@ func stringifyIntSlice(slice []int) string {
 		}
 	}
 	s += "]"
+}
+
+func buildRequest(requestURL string, data url.Values) (*http.Request, error) {
+	if data == nil {
+		return http.NewRequest("GET", requestURL, nil)
+	} else {
+		return http.NewRequest("POST", requestURL, strings.NewReader(data.Encode()))
+	}
 }
