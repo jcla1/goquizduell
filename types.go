@@ -138,6 +138,7 @@ type message struct {
 	U *User `json:"u"`
 
 	Blocked        []User          `json:"blocked"`
+	Games          []Game          `json:"games"`
 	Users          []User          `json:"users"`
 	Categories     map[int]string  `json:"cats"`
 	GameStatistics []GameStatistic `json:"game_stats"`

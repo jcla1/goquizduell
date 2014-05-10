@@ -316,6 +316,22 @@ func (c *Client) GetGame(gameID int) (*Game, error) {
 	return nil, err
 }
 
+// GetGames returns details of the specified games, not
+// including question and answer strings though.
+// Requires you to be logged in.
+func (c *Client) GetGames(gameIDs []int) ([]Game, error) {
+	data := url.Values{}
+
+	data.Set("gids", stringifyIntSlice(gameIDs))
+
+	msg, err := c.makeRequest("/games/short_games", data)
+	if err == nil {
+		return msg.Games, nil
+	}
+
+	return nil, err
+}
+
 // GiveUp ends the game with the provided gameID, you may
 // loose points when giving up.
 // Requires you to be logged in.
@@ -374,19 +390,9 @@ func (c *Client) DeclineGame(gameID int) (bool, error) {
 func (c *Client) UploadRoundAnswers(gameID int, answers []int, categoryID int) (*Game, error) {
 	data := url.Values{}
 
-	l := len(answers) - 1
-	s := "["
-	for i, a := range answers {
-		s += strconv.Itoa(a)
-		if i != l {
-			s += ", "
-		}
-	}
-	s += "]"
-
 	data.Set("game_id", strconv.Itoa(gameID))
 	data.Set("cat_choice", strconv.Itoa(categoryID))
-	data.Set("answers", s)
+	data.Set("answers", stringifyIntSlice(answers))
 
 	msg, err := c.makeRequest("/games/upload_round_answers", data)
 	if err == nil {
@@ -563,4 +569,16 @@ func getAuthCode(path, clientDate string, data url.Values) string {
 	h := hmac.New(sha256.New, []byte(authKey))
 	io.WriteString(h, msg)
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
+}
+
+func stringifyIntSlice(slice []int) string {
+	l := len(slice) - 1
+	s := "["
+	for i, a := range slice {
+		s += strconv.Itoa(a)
+		if i != l {
+			s += ", "
+		}
+	}
+	s += "]"
 }
