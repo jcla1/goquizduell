@@ -586,6 +586,10 @@ func buildRequest(requestURL string, data url.Values, method ...string) (*http.R
 		if data == nil {
 			return http.NewRequest(method[0], requestURL, nil)
 		}
+
+		if len(method) > 1 {
+			return http.NewRequest(method[0], requestURL, data.Get(method[1]))
+		}
 		return http.NewRequest(method[0], requestURL, strings.NewReader(data.Encode()))
 	}
 

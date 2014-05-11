@@ -72,6 +72,15 @@ func (t *TVClient) DeleteUser() map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), nil, "DELETE")
 }
 
+func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
+	img, _ := ioutil.ReadAll(r)
+
+	data := url.Values{}
+	data.Set("img", base64.StdEncoding.EncodeToString(img))
+
+	return t.request("/users/base64/"+strconv.Itoa(t.UserID)+"/jpg", data, "POST", "img")
+}
+
 func (t *TVClient) request(path string, data url.Values, method ...string) map[string]interface{} {
 	requestURL := tvProtocolPrefix + tvHostName + path
 	request, err := buildRequest(requestURL, data, method...)
