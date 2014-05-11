@@ -1,7 +1,9 @@
 package quizduell
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
