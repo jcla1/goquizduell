@@ -68,6 +68,10 @@ func (t *TVClient) GetProfile(userID int) map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(userID), nil)
 }
 
+func (t *TVClient) DeleteUser() map[string]interface{} {
+	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), nil, "DELETE")
+}
+
 func (t *TVClient) request(path string, data url.Values, method ...string) map[string]interface{} {
 	requestURL := tvProtocolPrefix + tvHostName + path
 	request, err := buildRequest(requestURL, data, method...)
