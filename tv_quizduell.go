@@ -60,9 +60,17 @@ func (t *TVClient) GetRankings() map[string]interface{} {
 	return t.request("/users/myranking/"+strconv.Itoa(t.UserID), nil)
 }
 
-func (t *TVClient) request(path string, data url.Values) map[string]interface{} {
+func (t *TVClient) GetMyProfile() map[string]interface{} {
+	return t.GetProfile(t.UserID)
+}
+
+func (t *TVClient) GetProfile(userID int) map[string]interface{} {
+	return t.request("/users/profiles/"+strconv.Itoa(userID), nil)
+}
+
+func (t *TVClient) request(path string, data url.Values, method ...string) map[string]interface{} {
 	requestURL := tvProtocolPrefix + tvHostName + path
-	request, err := buildRequest(requestURL, data)
+	request, err := buildRequest(requestURL, data, method...)
 
 	if err != nil {
 		panic(err)

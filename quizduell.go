@@ -581,7 +581,14 @@ func stringifyIntSlice(slice []int) string {
 	return s
 }
 
-func buildRequest(requestURL string, data url.Values) (*http.Request, error) {
+func buildRequest(requestURL string, data url.Values, method ...string) (*http.Request, error) {
+	if len(method) != 0 {
+		if data == nil {
+			return http.NewRequest(method[0], requestURL, nil)
+		}
+		return http.NewRequest(method[0], requestURL, strings.NewReader(data.Encode()))
+	}
+
 	if data == nil {
 		return http.NewRequest("GET", requestURL, nil)
 	}
