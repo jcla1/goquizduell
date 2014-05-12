@@ -89,6 +89,10 @@ func (t *TVClient) SelectCategory(categoryID int) map[string]interface{} {
 	return t.request("/users/"+strconv.Itoa(t.UserID)+"/category"+strconv.Itoa(categoryID), nil)
 }
 
+func (t *TVClient) SendAnswer(questionID, answerID int) map[string]interface{} {
+	return t.request("/users/"+strconv.Itoa(t.UserID)+"/response"+strconv.Itoa(questionID)+"/"+strconv.Itoa(answerID), nil)
+}
+
 func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
 	img, _ := ioutil.ReadAll(r)
 
