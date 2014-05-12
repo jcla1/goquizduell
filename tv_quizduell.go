@@ -70,7 +70,7 @@ func (t *TVClient) GetProfile(userID int) map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(userID), nil)
 }
 
-func (t *TVClient) PostProfile(profile map[string]interface{}) map[string]interface{} {
+func (t *TVClient) PostProfile(profile map[string]string) map[string]interface{} {
 	data := url.Values{}
 
 	for key, val := range profile {
