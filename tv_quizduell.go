@@ -85,6 +85,10 @@ func (t *TVClient) SetAvatarAndNickname(nick, avatarCode string) map[string]inte
 	return t.request("/users/"+strconv.Itoa(t.UserID)+"/avatarandnick", data)
 }
 
+func (t *TVClient) SelectCategory(categoryID int) map[string]interface{} {
+	return t.request("/users/"+strconv.Itoa(t.UserID)+"/category"+strconv.Itoa(categoryID), nil)
+}
+
 func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
 	img, _ := ioutil.ReadAll(r)
 
