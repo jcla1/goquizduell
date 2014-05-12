@@ -74,6 +74,17 @@ func (t *TVClient) DeleteUser() map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), nil, "DELETE")
 }
 
+func (t *TVClient) SetAvatarAndNickname(nick, avatarCode string) map[string]interface{} {
+	data := url.Values{}
+
+	if avatarCode != "" {
+		data.Set("AvatarString", avatarCode)
+	}
+	data.Set("Nick", nick)
+
+	return t.request("/users/"+strconv.Itoa(t.UserID)+"/avatarandnick", data)
+}
+
 func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
 	img, _ := ioutil.ReadAll(r)
 
