@@ -70,6 +70,16 @@ func (t *TVClient) GetProfile(userID int) map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(userID), nil)
 }
 
+func (t *TVClient) PostProfile(profile map[string]interface{}) map[string]interface{} {
+	data := url.Values{}
+
+	for key, val := range profile {
+		data.Set(key, val)
+	}
+
+	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), data)
+}
+
 func (t *TVClient) DeleteUser() map[string]interface{} {
 	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), nil, "DELETE")
 }
