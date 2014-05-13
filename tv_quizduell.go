@@ -49,28 +49,28 @@ func FromClient(c *Client) (*TVClient, error) {
 
 // AgreeAGBs makes the current user agree to the AGB
 // put up by the TV quiz broadcaster.
-func (t *TVClient) AgreeAGBs() map[string]interface{} {
+func (t *TVClient) AgreeAGBs() (map[string]interface{}, error) {
 	return t.request("/feousers/agbs/"+strconv.Itoa(t.UserID)+"/true", url.Values{})
 }
 
 // GetState returns the state of the TV quiz
-func (t *TVClient) GetState() map[string]interface{} {
+func (t *TVClient) GetState() (map[string]interface{}, error) {
 	return t.request("/states/"+strconv.Itoa(t.UserID), nil)
 }
 
-func (t *TVClient) GetRankings() map[string]interface{} {
+func (t *TVClient) GetRankings() (map[string]interface{}, error) {
 	return t.request("/users/myranking/"+strconv.Itoa(t.UserID), nil)
 }
 
-func (t *TVClient) GetMyProfile() map[string]interface{} {
+func (t *TVClient) GetMyProfile() (map[string]interface{}, error) {
 	return t.GetProfile(t.UserID)
 }
 
-func (t *TVClient) GetProfile(userID int) map[string]interface{} {
+func (t *TVClient) GetProfile(userID int) (map[string]interface{}, error) {
 	return t.request("/users/profiles/"+strconv.Itoa(userID), nil)
 }
 
-func (t *TVClient) PostProfile(profile map[string]string) map[string]interface{} {
+func (t *TVClient) PostProfile(profile map[string]string) (map[string]interface{}, error) {
 	data := url.Values{}
 
 	for key, val := range profile {
@@ -80,11 +80,11 @@ func (t *TVClient) PostProfile(profile map[string]string) map[string]interface{}
 	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), data)
 }
 
-func (t *TVClient) DeleteUser() map[string]interface{} {
+func (t *TVClient) DeleteUser() (map[string]interface{}, error) {
 	return t.request("/users/profiles/"+strconv.Itoa(t.UserID), nil, "DELETE")
 }
 
-func (t *TVClient) SetAvatarAndNickname(nick, avatarCode string) map[string]interface{} {
+func (t *TVClient) SetAvatarAndNickname(nick, avatarCode string) (map[string]interface{}, error) {
 	data := url.Values{}
 
 	if avatarCode != "" {
@@ -95,15 +95,15 @@ func (t *TVClient) SetAvatarAndNickname(nick, avatarCode string) map[string]inte
 	return t.request("/users/"+strconv.Itoa(t.UserID)+"/avatarandnick", data)
 }
 
-func (t *TVClient) SelectCategory(categoryID int) map[string]interface{} {
+func (t *TVClient) SelectCategory(categoryID int) (map[string]interface{}, error) {
 	return t.request("/users/"+strconv.Itoa(t.UserID)+"/category"+strconv.Itoa(categoryID), nil)
 }
 
-func (t *TVClient) SendAnswer(questionID, answerID int) map[string]interface{} {
+func (t *TVClient) SendAnswer(questionID, answerID int) (map[string]interface{}, error) {
 	return t.request("/users/"+strconv.Itoa(t.UserID)+"/response"+strconv.Itoa(questionID)+"/"+strconv.Itoa(answerID), nil)
 }
 
-func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
+func (t *TVClient) UploadProfileImage(r io.Reader) (map[string]interface{}, error) {
 	img, _ := ioutil.ReadAll(r)
 
 	data := url.Values{}
@@ -112,12 +112,12 @@ func (t *TVClient) UploadProfileImage(r io.Reader) map[string]interface{} {
 	return t.request("/users/base64/"+strconv.Itoa(t.UserID)+"/jpg", data, "POST", "img")
 }
 
-func (t *TVClient) request(path string, data url.Values, method ...string) map[string]interface{} {
+func (t *TVClient) request(path string, data url.Values, method ...string) (map[string]interface{}, error) {
 	requestURL := tvProtocolPrefix + tvHostName + path
 	request, err := buildRequest(requestURL, data, method...)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	request.Header.Set("x-app-request", corsHeaderToken)
@@ -127,7 +127,7 @@ func (t *TVClient) request(path string, data url.Values, method ...string) map[s
 	resp, err := http.DefaultClient.Do(request)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	defer resp.Body.Close()
@@ -135,10 +135,15 @@ func (t *TVClient) request(path string, data url.Values, method ...string) map[s
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var m map[string]interface{}
 	err = json.Unmarshal(body, &m)
-	return m
+
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
